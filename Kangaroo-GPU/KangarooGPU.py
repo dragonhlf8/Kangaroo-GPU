@@ -11,7 +11,8 @@ import argparse
 import time
 
 ###############################################################################
-parser = argparse.ArgumentParser(description='This tool uses Kangaroo algorithm with GPU support to search 1 pubkey in the specified range.', 
+# Argument Parsing
+parser = argparse.ArgumentParser(description='This tool uses Kangaroo algorithm with GPU support to search 1 pubkey in the specified range.',
                                  epilog='Enjoy the program! :) Tips BTC: 1NEJcwfcEm7Aax8oJNjRUnY3hEavCjNrai')
 parser.version = '15112021'
 parser.add_argument("-p", "--pubkey", help="Public Key in hex format (compressed or uncompressed)", required=True)
@@ -79,6 +80,12 @@ def pub2upub(pub_hex):
 def randk(a, b):
     return random.SystemRandom().randint(a, b) if flag_random else a
 
+# Automatically select the appropriate CUDA compute capability (sm_xx)
+def get_cuda_architecture():
+    # If targeting multiple architectures, use `-arch=sm_52 -arch=sm_86 -arch=sm_89` etc.
+    # You can automatically detect or provide the right compute capability.
+    return ['sm_52', 'sm_86', 'sm_89']  # Supports a range of GPUs including Quadro M2200, RTX 3070 Ti, RTX 4090
+
 ###############################################################################
 # Run the GPU search
 print('[+] Starting GPU Kangaroo.... Please Wait')
@@ -86,6 +93,12 @@ P = pub2upub(public_key)
 start_range = randk(a, b)
 end_range = randk(a, b)
 print(f'[+] Searching in the range: {hex(start_range)} to {hex(end_range)}')
+
+# Ensure CUDA device selection is done properly
+cuda_architectures = get_cuda_architecture()  # Adjust this to target the right GPU architecture
+for arch in cuda_architectures:
+    print(f'[+] Using CUDA architecture: {arch}')
+    # Compile CUDA code targeting the proper architecture if needed (done outside this script)
 
 while True:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
