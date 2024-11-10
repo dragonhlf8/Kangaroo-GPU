@@ -55,6 +55,7 @@ else:
     print('[-] Unsupported Platform currently for ctypes dll method. Only [Windows and Linux] is supported.')
     sys.exit()
 
+# Ensure path to the compiled shared object or DLL is correct
 if os.path.isfile(dllfile):
     pathdll = os.path.realpath(dllfile)
     bsgsgpu = ctypes.CDLL(pathdll)
@@ -80,11 +81,10 @@ def pub2upub(pub_hex):
 def randk(a, b):
     return random.SystemRandom().randint(a, b) if flag_random else a
 
-# Automatically select the appropriate CUDA compute capability (sm_xx)
+# Automatically select the appropriate CUDA compute architecture
 def get_cuda_architecture():
-    # If targeting multiple architectures, use `-arch=sm_52 -arch=sm_86 -arch=sm_89` etc.
-    # You can automatically detect or provide the right compute capability.
-    return ['sm_52', 'sm_86', 'sm_89']  # Supports a range of GPUs including Quadro M2200, RTX 3070 Ti, RTX 4090
+    # Targets multiple CUDA architectures
+    return ['sm_70', 'sm_75', 'sm_80']  # Supports GPUs such as A100, 3090 Ti, etc.
 
 ###############################################################################
 # Run the GPU search
@@ -115,5 +115,5 @@ while True:
     print(f'Searched range: {hex(start_range)} - {hex(end_range)}')
     start_range = randk(a, b)
     end_range = randk(a, b)
-    
+
 print('[+] Program Finished')
